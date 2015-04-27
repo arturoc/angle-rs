@@ -2,7 +2,7 @@ extern crate num;
 use num::{Zero,Float,Num,NumCast,zero};
 use num::traits::cast;
 use std::f64;
-use std::ops::{Add,Mul,Div,Sub};
+use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::cmp::Ordering;
 pub use Angle::*;
 
@@ -11,6 +11,7 @@ pub use Angle::*;
 pub trait Angle<N>{
     fn pi() -> Self;
     fn two_pi() -> Self;
+    fn half_pi() -> Self;
     fn to_rad(self) -> Rad<N>;
     fn to_deg(self) -> Deg<N>;
     fn wrap(self) -> Self;
@@ -49,6 +50,11 @@ impl<N: Num + NumCast + Clone> Angle<N> for Deg<N>{
     #[inline]
     fn two_pi() -> Deg<N>{
         Deg(cast(360.0).unwrap())
+    }
+    
+    #[inline]
+    fn half_pi() -> Deg<N>{
+        Deg(cast(90.0).unwrap())
     }
 
 	#[inline]
@@ -118,6 +124,11 @@ impl<N: Float> Angle<N> for Rad<N>{
     #[inline]
     fn two_pi() -> Rad<N>{
         Rad(cast(f64::consts::PI * 2.0).unwrap())
+    }
+    
+    #[inline]
+    fn half_pi() -> Rad<N>{
+        Rad(cast(f64::consts::PI * 0.5).unwrap())
     }
 
 	#[inline]
@@ -242,6 +253,24 @@ impl<N: Float> Mul for Rad<N>{
     }
 }
 
+impl<N: Float> Mul<N> for Deg<N>{
+    type Output = Deg<N>;
+    
+    #[inline]
+    fn mul(self, other: N) -> Deg<N>{
+    	Deg(self.0 * other)
+    }
+}
+
+impl<N: Float> Mul<N> for Rad<N>{
+    type Output = Rad<N>;
+    
+    #[inline]
+    fn mul(self, other: N) -> Rad<N>{
+    	Rad(self.0 * other)
+    }
+}
+
 impl<N: Num> Div for Deg<N>{
     type Output = Deg<N>;
     
@@ -256,7 +285,43 @@ impl<N: Float> Div for Rad<N>{
     
     #[inline]
     fn div(self, other: Rad<N>) -> Rad<N>{
-    	Rad(self.0 / other.value())
+    	Rad(self.0 / other.0)
+    }
+}
+
+impl<N: Num> Div<N> for Deg<N>{
+    type Output = Deg<N>;
+    
+    #[inline]
+    fn div(self, other: N) -> Deg<N>{
+    	Deg(self.0 / other)
+    }
+}
+
+impl<N: Float> Div<N> for Rad<N>{
+    type Output = Rad<N>;
+    
+    #[inline]
+    fn div(self, other: N) -> Rad<N>{
+    	Rad(self.0 / other)
+    }
+}
+
+impl<N: Num + Neg<Output=N>> Neg for Deg<N>{
+    type Output = Deg<N>;
+    
+    #[inline]
+    fn neg(self) -> Deg<N>{
+    	Deg(-self.0)
+    }
+}
+
+impl<N: Float> Neg for Rad<N>{
+    type Output = Rad<N>;
+    
+    #[inline]
+    fn neg(self) -> Rad<N>{
+    	Rad(-self.0)
     }
 }
 
@@ -290,6 +355,34 @@ impl<N: Float> PartialOrd for Rad<N>{
     fn partial_cmp(&self, other: &Rad<N>) -> Option<Ordering>{
     	self.wrap().0.partial_cmp(&other.wrap().0)
     }
+}
+
+pub trait Cast<T> {
+    fn from(t: T) -> Self;
+}
+
+impl<N1: NumCast, N2: NumCast> Cast<Deg<N2>> for Deg<N1>{
+	fn from(t: Deg<N2>) -> Deg<N1>{
+		Deg(cast(t.0).unwrap())
+	}
+}
+
+impl<N1: NumCast, N2: NumCast> Cast<Rad<N2>> for Rad<N1>{
+	fn from(t: Rad<N2>) -> Rad<N1>{
+		Rad(cast(t.0).unwrap())
+	}
+}
+
+impl<N1: NumCast, N2: Float> Cast<Rad<N2>> for Deg<N1>{
+	fn from(t: Rad<N2>) -> Deg<N1>{
+		Deg(cast(t.to_deg().0).unwrap())
+	}
+}
+
+impl<N1: NumCast, N2: Num + NumCast + Clone> Cast<Deg<N2>> for Rad<N1>{
+	fn from(t: Deg<N2>) -> Rad<N1>{
+		Rad(cast(t.to_rad().0).unwrap())
+	}
 }
 
 #[test]
