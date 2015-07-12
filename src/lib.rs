@@ -24,6 +24,7 @@ pub trait Angle<N>{
     fn cos(self) -> N where N:Float;
     fn tan(self) -> N where N:Float;
     fn sin_cos(self) -> (N,N) where N:Float;
+    fn abs(self) -> Self;
 } 
 
 #[derive(Clone,Copy,Debug)]
@@ -101,6 +102,11 @@ impl<N: Num + NumCast + Clone> Angle<N> for Deg<N>{
     	where N: Float {
     	self.to_rad().value().sin_cos()
     }
+    
+	#[inline]
+    fn abs(self) -> Deg<N> {
+    	Deg(cast::<f64,N>(cast::<N,f64>(self.0).unwrap().abs()).unwrap())
+    }
 }
 
 
@@ -170,6 +176,11 @@ impl<N: Float> Angle<N> for Rad<N>{
     #[inline]	
     fn sin_cos(self) -> (N,N) {
     	self.value().sin_cos()
+    }
+    
+	#[inline]
+    fn abs(self) -> Rad<N> {
+    	Rad(cast::<f64,N>(cast::<N,f64>(self.0).unwrap().abs()).unwrap())
     }
 }
     
