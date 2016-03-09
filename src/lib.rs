@@ -4,7 +4,6 @@ use num::traits::cast;
 use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::cmp::Ordering;
-pub use Angle::*;
 
 
 
