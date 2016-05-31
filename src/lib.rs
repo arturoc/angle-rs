@@ -5,7 +5,7 @@ use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::cmp::Ordering;
 
-use num::FromPrimitive;
+use num::{FromPrimitive, ToPrimitive};
 
 
 
@@ -414,6 +414,26 @@ impl<N: FromPrimitive> FromPrimitive for Rad<N>{
 
     fn from_u64(n: u64) -> Option<Rad<N>>{
         N::from_u64(n).map(|n| Rad(n))
+    }
+}
+
+impl<N: ToPrimitive> ToPrimitive for Deg<N>{
+    fn to_i64(&self) -> Option<i64>{
+        self.0.to_i64()
+    }
+
+    fn to_u64(&self) -> Option<u64>{
+        self.0.to_u64()
+    }
+}
+
+impl<N: ToPrimitive> ToPrimitive for Rad<N>{
+    fn to_i64(&self) -> Option<i64>{
+        self.0.to_i64()
+    }
+
+    fn to_u64(&self) -> Option<u64>{
+        self.0.to_u64()
     }
 }
 
