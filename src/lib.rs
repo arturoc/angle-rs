@@ -4,6 +4,7 @@ use num::traits::cast;
 use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::cmp::Ordering;
+use std::fmt;
 
 use num::{FromPrimitive, ToPrimitive};
 
@@ -434,6 +435,18 @@ impl<N: ToPrimitive> ToPrimitive for Rad<N>{
 
     fn to_u64(&self) -> Option<u64>{
         self.0.to_u64()
+    }
+}
+
+impl<N: fmt::Display> fmt::Display for Deg<N>{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f, "{} deg", self.0)
+    }
+}
+
+impl<N: fmt::Display> fmt::Display for Rad<N>{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f, "{} rad", self.0)
     }
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "angle"
-version = "0.1.4"
+version = "0.1.55555"
 authors = ["arturo castro <me@arturocastro.net>"]
 description = "Angle wrapper to avoid ambiguous parameters + common operation over angles like wrapping, comparisons, arithmetic operations, trigonometric operations and conversions between rad and deg."
 license = "MIT"
