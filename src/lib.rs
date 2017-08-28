@@ -1,4 +1,7 @@
 extern crate num_traits;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 
 use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
@@ -27,9 +30,10 @@ pub trait Angle<N>{
     fn abs(self) -> Self;
 }
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Copy,Debug,Serialize,Deserialize)]
 pub struct Deg<N>(pub N);
-#[derive(Clone,Copy,Debug)]
+
+#[derive(Clone,Copy,Debug,Serialize,Deserialize)]
 pub struct Rad<N>(pub N);
 
 impl<N: Float + From<f64>> Angle<N> for Deg<N>{
