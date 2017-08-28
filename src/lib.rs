@@ -1,14 +1,12 @@
-extern crate num;
-use num::{Zero,Float,Num,NumCast,zero};
-use num::traits::cast;
+extern crate num_traits;
+
 use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::cmp::Ordering;
 use std::fmt;
 
-use num::{FromPrimitive, ToPrimitive};
-
-
+use num_traits::{Zero,Float,Num,zero};
+use num_traits::{FromPrimitive, ToPrimitive};
 
 pub trait Angle<N>{
     fn pi() -> Self;
@@ -34,10 +32,10 @@ pub struct Deg<N>(pub N);
 #[derive(Clone,Copy,Debug)]
 pub struct Rad<N>(pub N);
 
-impl<N: Num + NumCast + Clone> Angle<N> for Deg<N>{
+impl<N: Float + From<f64>> Angle<N> for Deg<N>{
 	#[inline]
     fn to_rad(self) -> Rad<N>{
-        Rad(cast::<f64,N>(cast::<N,f64>(self.value()).unwrap() * f64::consts::PI / 180.0).unwrap())
+        Rad(self.value() * From::from(f64::consts::PI) / From::from(180.0))
     }
 
     #[inline]
@@ -47,33 +45,33 @@ impl<N: Num + NumCast + Clone> Angle<N> for Deg<N>{
 
 	#[inline]
     fn pi() -> Deg<N>{
-        Deg(cast(180.0).unwrap())
+        Deg(From::from(180.0))
     }
 
     #[inline]
     fn two_pi() -> Deg<N>{
-        Deg(cast(360.0).unwrap())
+        Deg(From::from(360.0))
     }
 
     #[inline]
     fn half_pi() -> Deg<N>{
-        Deg(cast(90.0).unwrap())
+        Deg(From::from(90.0))
     }
 
 	#[inline]
     fn wrap(self) -> Deg<N>{
 		// algorithm from http://stackoverflow.com/a/5852628/599884
-		self.clone() - Deg::two_pi() * Deg(cast(cast::<N,i64>((self  / Deg::two_pi()).value()).unwrap()).unwrap())
+		self.clone() - Deg::two_pi() * Deg(From::from((self  / Deg::two_pi()).value()))
     }
 
     #[inline]
     fn max(self, other: Deg<N>) -> Deg<N>{
-    	Deg(cast::<f64,N>(cast::<N,f64>(self.wrap().value()).unwrap().max(cast(other.wrap().value()).unwrap())).unwrap())
+    	Deg(From::from(self.wrap().value().max(From::from(other.wrap().value()))))
     }
 
     #[inline]
     fn min(self, other: Deg<N>) -> Deg<N>{
-    	Deg(cast::<f64,N>(cast::<N,f64>(self.wrap().value()).unwrap().min(cast(other.wrap().value()).unwrap())).unwrap())
+    	Deg(From::from(self.wrap().value().min(From::from(other.wrap().value()))))
     }
 
     #[inline]
@@ -107,13 +105,13 @@ impl<N: Num + NumCast + Clone> Angle<N> for Deg<N>{
 
 	#[inline]
     fn abs(self) -> Deg<N> {
-    	Deg(cast::<f64,N>(cast::<N,f64>(self.0).unwrap().abs()).unwrap())
+    	Deg(From::from(self.0.abs()))
     }
 }
 
 
 
-impl<N: Float> Angle<N> for Rad<N>{
+impl<N: Float + From<f64>> Angle<N> for Rad<N>{
 	#[inline]
     fn to_rad(self) -> Rad<N>{
         self
@@ -121,22 +119,24 @@ impl<N: Float> Angle<N> for Rad<N>{
 
     #[inline]
     fn to_deg(	self) -> Deg<N>{
-        Deg(self.0 * cast(180.0 / f64::consts::PI).unwrap())
+        Deg(self.0 * From::from(180.0) / From::from(f64::consts::PI))
     }
 
 	#[inline]
     fn pi() -> Rad<N>{
-        Rad(cast(f64::consts::PI).unwrap())
+        Rad(From::from(f64::consts::PI))
     }
 
     #[inline]
     fn two_pi() -> Rad<N>{
-        Rad(cast(f64::consts::PI * 2.0).unwrap())
+        let pi: N = From::from(f64::consts::PI);
+        Rad(pi * From::from(2.0))
     }
 
     #[inline]
     fn half_pi() -> Rad<N>{
-        Rad(cast(f64::consts::PI * 0.5).unwrap())
+        let pi: N = From::from(f64::consts::PI);
+        Rad(pi * From::from(0.5))
     }
 
 	#[inline]
@@ -182,11 +182,11 @@ impl<N: Float> Angle<N> for Rad<N>{
 
 	#[inline]
     fn abs(self) -> Rad<N> {
-    	Rad(cast::<f64,N>(cast::<N,f64>(self.0).unwrap().abs()).unwrap())
+    	Rad(From::from(self.0.abs()))
     }
 }
 
-impl<N: Num + NumCast + Clone + PartialOrd> Zero for Deg<N>{
+impl<N: Float + From<f64>> Zero for Deg<N>{
     /// Returns the additive identity.
     #[inline]
     fn zero() -> Deg<N>{
@@ -199,7 +199,7 @@ impl<N: Num + NumCast + Clone + PartialOrd> Zero for Deg<N>{
     }
 }
 
-impl<N: Float> Zero for Rad<N>{
+impl<N: Float + From<f64>> Zero for Rad<N>{
     /// Returns the additive identity.
     #[inline]
     fn zero() -> Rad<N>{
@@ -338,7 +338,7 @@ impl<N: Float> Neg for Rad<N>{
     }
 }
 
-impl<N: Num + NumCast + Clone + PartialOrd> PartialEq for Deg<N>{
+impl<N: Float + From<f64>> PartialEq for Deg<N>{
 
 	#[inline]
 	fn eq(&self, other: &Deg<N>) -> bool{
@@ -346,7 +346,7 @@ impl<N: Num + NumCast + Clone + PartialOrd> PartialEq for Deg<N>{
 	}
 }
 
-impl<N: Float> PartialEq for Rad<N>{
+impl<N: Float + From<f64>> PartialEq for Rad<N>{
 
 	#[inline]
 	fn eq(&self, other: &Rad<N>) -> bool{
@@ -354,7 +354,7 @@ impl<N: Float> PartialEq for Rad<N>{
 	}
 }
 
-impl<N: Num + NumCast + Clone + PartialOrd> PartialOrd for Deg<N>{
+impl<N: Float + From<f64>> PartialOrd for Deg<N>{
 
 	#[inline]
     fn partial_cmp(&self, other: &Deg<N>) -> Option<Ordering>{
@@ -362,7 +362,7 @@ impl<N: Num + NumCast + Clone + PartialOrd> PartialOrd for Deg<N>{
     }
 }
 
-impl<N: Float> PartialOrd for Rad<N>{
+impl<N: Float + From<f64>> PartialOrd for Rad<N>{
 
 	#[inline]
     fn partial_cmp(&self, other: &Rad<N>) -> Option<Ordering>{
@@ -374,27 +374,15 @@ pub trait Cast<T> {
     fn from(t: T) -> Self;
 }
 
-impl<N1: NumCast, N2: NumCast> Cast<Deg<N2>> for Deg<N1>{
-	fn from(t: Deg<N2>) -> Deg<N1>{
-		Deg(cast(t.0).unwrap())
-	}
-}
-
-impl<N1: NumCast, N2: NumCast> Cast<Rad<N2>> for Rad<N1>{
-	fn from(t: Rad<N2>) -> Rad<N1>{
-		Rad(cast(t.0).unwrap())
-	}
-}
-
-impl<N1: NumCast, N2: Float> Cast<Rad<N2>> for Deg<N1>{
+impl<N1: From<N2>, N2: Float + From<f64>> From<Rad<N2>> for Deg<N1>{
 	fn from(t: Rad<N2>) -> Deg<N1>{
-		Deg(cast(t.to_deg().0).unwrap())
+		Deg(From::from(t.to_deg().0))
 	}
 }
 
-impl<N1: NumCast, N2: Num + NumCast + Clone> Cast<Deg<N2>> for Rad<N1>{
+impl<N1: From<N2>, N2: Float + From<f64>> From<Deg<N2>> for Rad<N1>{
 	fn from(t: Deg<N2>) -> Rad<N1>{
-		Rad(cast(t.to_rad().0).unwrap())
+		Rad(From::from(t.to_rad().0))
 	}
 }
 
