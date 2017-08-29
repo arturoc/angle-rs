@@ -5,6 +5,7 @@ extern crate serde_derive;
 
 use std::f64;
 use std::ops::{Add,Mul,Div,Sub,Neg};
+use std::ops::{AddAssign,MulAssign,DivAssign,SubAssign};
 use std::cmp::Ordering;
 use std::fmt;
 
@@ -248,6 +249,20 @@ impl<N: Add<N, Output = N>> Add for Rad<N>{
     }
 }
 
+impl<N: AddAssign<N>> AddAssign for Deg<N>{
+    #[inline]
+    fn add_assign(&mut self, other: Deg<N>){
+    	self.0 += other.0
+    }
+}
+
+impl<N: AddAssign<N>> AddAssign for Rad<N>{
+    #[inline]
+    fn add_assign(&mut self, other: Rad<N>){
+    	self.0 += other.0
+    }
+}
+
 impl<N: Sub<N, Output = N>> Sub for Deg<N>{
     type Output = Deg<N>;
 
@@ -263,6 +278,20 @@ impl<N: Sub<N, Output = N>> Sub for Rad<N>{
     #[inline]
     fn sub(self, other: Rad<N>) -> Rad<N>{
     	Rad(self.0 - other.0)
+    }
+}
+
+impl<N: SubAssign<N>> SubAssign for Deg<N>{
+    #[inline]
+    fn sub_assign(&mut self, other: Deg<N>){
+    	self.0 -= other.0
+    }
+}
+
+impl<N: SubAssign<N>> SubAssign for Rad<N>{
+    #[inline]
+    fn sub_assign(&mut self, other: Rad<N>){
+    	self.0 -= other.0
     }
 }
 
@@ -302,6 +331,34 @@ impl<N: Mul<N, Output = N>> Mul<N> for Rad<N>{
     }
 }
 
+impl<N: MulAssign<N>> MulAssign for Deg<N>{
+    #[inline]
+    fn mul_assign(&mut self, other: Deg<N>){
+    	self.0 *= other.0
+    }
+}
+
+impl<N: MulAssign<N>> MulAssign for Rad<N>{
+    #[inline]
+    fn mul_assign(&mut self, other: Rad<N>){
+    	self.0 *= other.0
+    }
+}
+
+impl<N: MulAssign<N>> MulAssign<N> for Deg<N>{
+    #[inline]
+    fn mul_assign(&mut self, other: N){
+    	self.0 *= other
+    }
+}
+
+impl<N: MulAssign<N>> MulAssign<N> for Rad<N>{
+    #[inline]
+    fn mul_assign(&mut self, other: N){
+    	self.0 *= other
+    }
+}
+
 impl<N: Div<N, Output = N>> Div for Deg<N>{
     type Output = Deg<N>;
 
@@ -335,6 +392,34 @@ impl<N: Div<N, Output = N>> Div<N> for Rad<N>{
     #[inline]
     fn div(self, other: N) -> Rad<N>{
     	Rad(self.0 / other)
+    }
+}
+
+impl<N: DivAssign<N>> DivAssign for Deg<N>{
+    #[inline]
+    fn div_assign(&mut self, other: Deg<N>){
+    	self.0 /= other.0
+    }
+}
+
+impl<N: DivAssign<N>> DivAssign for Rad<N>{
+    #[inline]
+    fn div_assign(&mut self, other: Rad<N>){
+    	self.0 /= other.0
+    }
+}
+
+impl<N: DivAssign<N>> DivAssign<N> for Deg<N>{
+    #[inline]
+    fn div_assign(&mut self, other: N){
+    	self.0 /= other
+    }
+}
+
+impl<N: DivAssign<N>> DivAssign<N> for Rad<N>{
+    #[inline]
+    fn div_assign(&mut self, other: N){
+    	self.0 /= other
     }
 }
 
@@ -386,10 +471,6 @@ impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Rad<N>{
     fn partial_cmp(&self, other: &Rad<N>) -> Option<Ordering>{
     	self.clone().wrap().0.partial_cmp(&other.clone().wrap().0)
     }
-}
-
-pub trait Cast<T> {
-    fn from(t: T) -> Self;
 }
 
 impl<N1: From<N2>, N2: Num + Clone + NumCast> From<Rad<N2>> for Deg<N1>{
