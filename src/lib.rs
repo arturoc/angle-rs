@@ -9,7 +9,7 @@ use std::ops::{AddAssign,MulAssign,DivAssign,SubAssign};
 use std::cmp::Ordering;
 use std::fmt;
 
-use num_traits::{Zero,Float,Num,Signed,zero,NumCast,cast};
+use num_traits::{Zero,Float,Num,Signed,zero,NumCast};
 use num_traits::{FromPrimitive, ToPrimitive};
 
 pub trait Angle<N>{
@@ -40,7 +40,7 @@ pub struct Rad<N>(pub N);
 impl<N: Num> Angle<N> for Deg<N>{
 	#[inline]
     fn to_rad(self) -> Rad<N> where N: NumCast{
-        Rad(self.value() * cast(f64::consts::PI).unwrap() / cast(180.0).unwrap())
+        Rad(self.value() * num_traits::cast(f64::consts::PI).unwrap() / num_traits::cast(180.0).unwrap())
     }
 
     #[inline]
@@ -50,17 +50,17 @@ impl<N: Num> Angle<N> for Deg<N>{
 
 	#[inline]
     fn pi() -> Deg<N> where N: NumCast{
-        Deg(cast(180.0).unwrap())
+        Deg(num_traits::cast(180.0).unwrap())
     }
 
     #[inline]
     fn two_pi() -> Deg<N> where N: NumCast{
-        Deg(cast(360.0).unwrap())
+        Deg(num_traits::cast(360.0).unwrap())
     }
 
     #[inline]
     fn half_pi() -> Deg<N> where N: NumCast{
-        Deg(cast(90.0).unwrap())
+        Deg(num_traits::cast(90.0).unwrap())
     }
 
 	#[inline]
@@ -130,24 +130,24 @@ impl<N:  Num> Angle<N> for Rad<N>{
 
     #[inline]
     fn to_deg(	self) -> Deg<N> where N: NumCast{
-        Deg(self.0 * cast(180.0).unwrap() / cast(f64::consts::PI).unwrap())
+        Deg(self.0 * num_traits::cast(180.0).unwrap() / num_traits::cast(f64::consts::PI).unwrap())
     }
 
 	#[inline]
     fn pi() -> Rad<N> where N: NumCast{
-        Rad(cast(f64::consts::PI).unwrap())
+        Rad(num_traits::cast(f64::consts::PI).unwrap())
     }
 
     #[inline]
     fn two_pi() -> Rad<N> where N: NumCast{
-        let pi: N = cast(f64::consts::PI).unwrap();
-        Rad(pi * cast(2.0).unwrap())
+        let pi: N = num_traits::cast(f64::consts::PI).unwrap();
+        Rad(pi * num_traits::cast(2.0).unwrap())
     }
 
     #[inline]
     fn half_pi() -> Rad<N> where N: NumCast{
-        let pi: N = cast(f64::consts::PI).unwrap();
-        Rad(pi * cast(0.5).unwrap())
+        let pi: N = num_traits::cast(f64::consts::PI).unwrap();
+        Rad(pi * num_traits::cast(0.5).unwrap())
     }
 
 	#[inline]
@@ -535,6 +535,31 @@ impl<N: fmt::Display> fmt::Display for Rad<N>{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
         write!(f, "{} rad", self.0)
     }
+}
+
+pub trait AngleCast{
+    fn from<N: NumCast + Num, T: Angle<N>>(v: T) -> Option<Self> where Self: Sized;
+}
+
+impl<N: NumCast> AngleCast for Rad<N>{
+    fn from<N2: NumCast + Num, T: Angle<N2>>(v: T) -> Option<Rad<N>>{
+        num_traits::cast(v.to_rad().value()).map(|v| Rad(v))
+    }
+}
+
+impl<N: NumCast> AngleCast for Deg<N>{
+    fn from<N2: NumCast + Num, T: Angle<N2>>(v: T) -> Option<Deg<N>>{
+        num_traits::cast(v.to_deg().value()).map(|v| Deg(v))
+    }
+}
+
+pub fn cast<T,U,N1,N2>(t: T) -> Option<U>
+where T: AngleCast + Angle<N1>,
+      U: AngleCast + Angle<N2>,
+      N1: NumCast + Num,
+      N2: NumCast + Num,
+{
+    U::from(t)
 }
 
 #[test]
