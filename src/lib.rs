@@ -31,10 +31,10 @@ pub trait Angle<N>{
     fn abs(self) -> Self where N: Signed;
 }
 
-#[derive(Clone,Copy,Debug,Serialize,Deserialize)]
+#[derive(Clone,Copy,Debug,Default,Serialize,Deserialize)]
 pub struct Deg<N>(pub N);
 
-#[derive(Clone,Copy,Debug,Serialize,Deserialize)]
+#[derive(Clone,Copy,Debug,Default,Serialize,Deserialize)]
 pub struct Rad<N>(pub N);
 
 impl<N: Num> Angle<N> for Deg<N>{
@@ -640,4 +640,12 @@ fn min() {
 	let _20 = Deg(20f32);
 	let _370 = Deg(370f32);
 	assert_eq!(_20.min(_370),_370);
+}
+
+#[test]
+fn default() {
+    let deg: Deg<f64> = Default::default();
+    assert_eq!(deg.0, 0f64);
+    let rad: Rad<f64> = Default::default();
+    assert_eq!(rad.0, 0f64);
 }
