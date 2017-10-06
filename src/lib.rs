@@ -65,8 +65,11 @@ impl<N: Num> Angle<N> for Deg<N>{
 
 	#[inline]
     fn wrap(self) -> Deg<N> where N: NumCast + Clone{
-		// algorithm from http://stackoverflow.com/a/5852628/599884
-		self.clone() - Deg::<N>::two_pi() * Deg((self  / Deg::two_pi()).value().into())
+		//self.clone() - Deg::<N>::two_pi() * Deg((self  / Deg::two_pi()).value().into())
+        let norm: N = (self.clone()  / Deg::two_pi()).value();
+        let norm: f64 = num_traits::cast(norm).unwrap();
+        let floor: N = num_traits::cast(norm.floor()).unwrap();
+        self - Deg::<N>::two_pi() * Deg(floor)
     }
 
     #[inline]
@@ -152,8 +155,11 @@ impl<N:  Num> Angle<N> for Rad<N>{
 
 	#[inline]
     fn wrap(self) -> Rad<N> where N: NumCast + Clone {
-		// algorithm from http://stackoverflow.com/a/5852628/599884
-		self.clone() - Rad::<N>::two_pi() * Rad((self  / Rad::two_pi()).value().into())
+		// self.clone() - Rad::<N>::two_pi() * Rad((self  / Rad::two_pi()).value().into())
+        let norm: N = (self.clone()  / Rad::two_pi()).value();
+        let norm: f64 = num_traits::cast(norm).unwrap();
+        let floor: N = num_traits::cast(norm.floor()).unwrap();
+        self - Rad::<N>::two_pi() * Rad(floor)
     }
 
     #[inline]
