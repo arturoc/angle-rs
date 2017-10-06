@@ -66,10 +66,11 @@ impl<N: Num> Angle<N> for Deg<N>{
 	#[inline]
     fn wrap(self) -> Deg<N> where N: NumCast + Clone{
 		//self.clone() - Deg::<N>::two_pi() * Deg((self  / Deg::two_pi()).value().into())
-        let norm: N = (self.clone()  / Deg::two_pi()).value();
-        let norm: f64 = num_traits::cast(norm).unwrap();
-        let floor: N = num_traits::cast(norm.floor()).unwrap();
-        self - Deg::<N>::two_pi() * Deg(floor)
+        let selff: f64 = num_traits::cast(self.value()).unwrap();
+        let norm: f64 = selff  / Deg::<f64>::two_pi().value();
+        let floor: f64 = norm.floor();
+        let v: N = num_traits::cast(selff - Deg::<f64>::two_pi().value() * floor).unwrap();
+        Deg(v)
     }
 
     #[inline]
@@ -156,10 +157,11 @@ impl<N:  Num> Angle<N> for Rad<N>{
 	#[inline]
     fn wrap(self) -> Rad<N> where N: NumCast + Clone {
 		// self.clone() - Rad::<N>::two_pi() * Rad((self  / Rad::two_pi()).value().into())
-        let norm: N = (self.clone()  / Rad::two_pi()).value();
-        let norm: f64 = num_traits::cast(norm).unwrap();
-        let floor: N = num_traits::cast(norm.floor()).unwrap();
-        self - Rad::<N>::two_pi() * Rad(floor)
+        let selff: f64 = num_traits::cast(self.value()).unwrap();
+        let norm: f64 = selff  / Rad::<f64>::two_pi().value();
+        let floor: f64 = norm.floor();
+        let v: N = num_traits::cast(selff - Rad::<f64>::two_pi().value() * floor).unwrap();
+        Rad(v)
     }
 
     #[inline]
@@ -576,6 +578,13 @@ fn wrap64() {
 }
 
 #[test]
+fn negative_wrap64() {
+	let pi: Rad<f64> = Rad::pi();
+	let pi_wrapped = (pi - Rad::two_pi()).wrap();
+	assert_eq!(pi, pi_wrapped)
+}
+
+#[test]
 fn deg_eq_rad64() {
 	let _180 = Deg(180.0f64);
 	let pi = Rad::pi();
@@ -602,7 +611,22 @@ fn wrap32() {
 	let pi: Deg<f32> = Deg::pi();
 	let pi_wrapped = (pi + Deg::two_pi()).wrap();
 	assert_eq!(pi, pi_wrapped)
+}
 
+#[test]
+fn negative_wrap32() {
+	// use deg instead of rad, otherwise the float preccision is not enough
+	let _90neg: Deg<f32> = Deg(-90.);
+    let _270: Deg<f32> = Deg(270.);
+	assert_eq!(_90neg.wrap().value(), _270.value())
+}
+
+#[test]
+fn negative_wrapunsigned() {
+	// use deg instead of rad, otherwise the float preccision is not enough
+	let _90neg: Deg<i32> = Deg(-90);
+    let _270: Deg<i32> = Deg(270);
+	assert_eq!(_90neg.wrap().value(), _270.value())
 }
 
 #[test]
