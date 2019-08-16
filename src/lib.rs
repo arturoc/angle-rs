@@ -8,6 +8,7 @@ use std::ops::{Add,Mul,Div,Sub,Neg};
 use std::ops::{AddAssign,MulAssign,DivAssign,SubAssign};
 use std::cmp::Ordering;
 use std::fmt;
+use std::hash::{Hash, Hasher};
 
 use num_traits::{Zero,Float,Num,Signed,zero,NumCast};
 use num_traits::{FromPrimitive, ToPrimitive};
@@ -457,6 +458,8 @@ impl<N: PartialEq + Num + Clone + NumCast> PartialEq for Deg<N>{
 	}
 }
 
+impl<N: Eq + PartialEq + Num + Clone + NumCast> Eq for Deg<N>{}
+
 impl<N: PartialEq + Num + Clone + NumCast> PartialEq for Rad<N>{
 
 	#[inline]
@@ -464,6 +467,8 @@ impl<N: PartialEq + Num + Clone + NumCast> PartialEq for Rad<N>{
 		self.clone().wrap().0.eq(&other.clone().wrap().0)
 	}
 }
+
+impl<N: Eq + PartialEq + Num + Clone + NumCast> Eq for Rad<N>{}
 
 impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Deg<N>{
 
@@ -473,11 +478,27 @@ impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Deg<N>{
     }
 }
 
+impl<N: Ord + PartialEq + Num + Clone + NumCast> Ord for Deg<N>{
+
+	#[inline]
+    fn cmp(&self, other: &Deg<N>) -> Ordering{
+    	self.clone().wrap().0.cmp(&other.clone().wrap().0)
+    }
+}
+
 impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Rad<N>{
 
 	#[inline]
     fn partial_cmp(&self, other: &Rad<N>) -> Option<Ordering>{
     	self.clone().wrap().0.partial_cmp(&other.clone().wrap().0)
+    }
+}
+
+impl<N: Ord + PartialEq + Num + Clone + NumCast> Ord for Rad<N>{
+
+	#[inline]
+    fn cmp(&self, other: &Rad<N>) -> Ordering{
+    	self.clone().wrap().0.cmp(&other.clone().wrap().0)
     }
 }
 
@@ -542,6 +563,18 @@ impl<N: fmt::Display> fmt::Display for Deg<N>{
 impl<N: fmt::Display> fmt::Display for Rad<N>{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
         write!(f, "{} rad", self.0)
+    }
+}
+
+impl<N> Hash for Deg<N> where N: Hash{
+    fn hash<H: Hasher>(&self, state: &mut H){
+        self.0.hash(state)
+    }
+}
+
+impl<N> Hash for Rad<N> where N: Hash{
+    fn hash<H: Hasher>(&self, state: &mut H){
+        self.0.hash(state)
     }
 }
 
