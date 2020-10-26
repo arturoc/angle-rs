@@ -13,3 +13,4 @@ repository = "https://github.com/arturoc/angle-rs"
 num-traits = "0.2"
 serde = "1.0"
 serde_derive = "1.0"
+simba = { version = "0.2", optional = true }

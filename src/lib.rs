@@ -712,3 +712,33 @@ fn default() {
     let rad: Rad<f64> = Default::default();
     assert_eq!(rad.0, 0f64);
 }
+
+#[cfg(feature="simba")]
+impl<T: Copy, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Deg<T>> for Deg<S> {
+    fn to_superset(&self) -> Deg<T> {
+        Deg(self.0.to_superset())
+    }
+
+    fn from_superset_unchecked(element: &Deg<T>) -> Self {
+        Deg(S::from_superset_unchecked(&element.0))
+    }
+
+    fn is_in_subset(element: &Deg<T>) -> bool {
+        S::is_in_subset(&element.0)
+    }
+}
+
+#[cfg(feature="simba")]
+impl<T: Copy, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Rad<T>> for Rad<S> {
+    fn to_superset(&self) -> Rad<T> {
+        Rad(self.0.to_superset())
+    }
+
+    fn from_superset_unchecked(element: &Rad<T>) -> Self {
+        Rad(S::from_superset_unchecked(&element.0))
+    }
+
+    fn is_in_subset(element: &Rad<T>) -> bool {
+        S::is_in_subset(&element.0)
+    }
+}
