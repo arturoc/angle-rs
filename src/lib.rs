@@ -77,15 +77,15 @@ impl<N: Num> Angle<N> for Deg<N>{
 
     #[inline]
     fn max(self, other: Deg<N>) -> Deg<N> where N: PartialOrd + NumCast + Clone{
-        let v = self.wrap().value();
-        let o = other.wrap().value();
+        let v = self.value();
+        let o = other.value();
         if v > o { Deg(v) } else { Deg(o) }
     }
 
     #[inline]
     fn min(self, other: Deg<N>) -> Deg<N> where N: PartialOrd + NumCast + Clone{
-        let v = self.wrap().value();
-        let o = other.wrap().value();
+        let v = self.value();
+        let o = other.value();
         if v < o { Deg(v) } else { Deg(o) }
     }
 
@@ -173,15 +173,15 @@ impl<N:  Num> Angle<N> for Rad<N>{
 
     #[inline]
     fn max(self, other: Rad<N>) -> Rad<N> where N: PartialOrd + NumCast + Clone {
-        let v = self.wrap().value();
-        let o = other.wrap().value();
+        let v = self.value();
+        let o = other.value();
         if v > o { Rad(v) } else { Rad(o) }
     }
 
     #[inline]
     fn min(self, other: Rad<N>) -> Rad<N> where N: PartialOrd + NumCast + Clone {
-        let v = self.wrap().value();
-        let o = other.wrap().value();
+        let v = self.value();
+        let o = other.value();
         if v < o { Rad(v) } else { Rad(o) }
     }
 
@@ -234,7 +234,7 @@ impl<N: Num + Zero + NumCast + Clone> Zero for Deg<N>{
 
     #[inline]
     fn is_zero(&self) -> bool{
-        self.clone().wrap().0 == N::zero()
+        self.clone().0.is_zero()
     }
 }
 
@@ -247,7 +247,7 @@ impl<N: Num + Zero + NumCast + Clone> Zero for Rad<N>{
 
     #[inline]
     fn is_zero(&self) -> bool{
-        self.clone().wrap().0 == N::zero()
+        self.clone().0.is_zero()
     }
 }
 
@@ -465,7 +465,7 @@ impl<N: PartialEq + Num + Clone + NumCast> PartialEq for Deg<N>{
 
 	#[inline]
 	fn eq(&self, other: &Deg<N>) -> bool{
-		self.clone().wrap().0.eq(&other.clone().wrap().0)
+		self.0.eq(&other.0)
 	}
 }
 
@@ -475,7 +475,7 @@ impl<N: PartialEq + Num + Clone + NumCast> PartialEq for Rad<N>{
 
 	#[inline]
 	fn eq(&self, other: &Rad<N>) -> bool{
-		self.clone().wrap().0.eq(&other.clone().wrap().0)
+		self.0.eq(&other.0)
 	}
 }
 
@@ -485,7 +485,7 @@ impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Deg<N>{
 
 	#[inline]
     fn partial_cmp(&self, other: &Deg<N>) -> Option<Ordering>{
-    	self.clone().wrap().0.partial_cmp(&other.clone().wrap().0)
+    	self.0.partial_cmp(&other.0)
     }
 }
 
@@ -493,7 +493,7 @@ impl<N: Ord + PartialEq + Num + Clone + NumCast> Ord for Deg<N>{
 
 	#[inline]
     fn cmp(&self, other: &Deg<N>) -> Ordering{
-    	self.clone().wrap().0.cmp(&other.clone().wrap().0)
+    	self.0.cmp(&other.0)
     }
 }
 
@@ -501,7 +501,7 @@ impl<N: PartialOrd + Num + Clone + NumCast> PartialOrd for Rad<N>{
 
 	#[inline]
     fn partial_cmp(&self, other: &Rad<N>) -> Option<Ordering>{
-    	self.clone().wrap().0.partial_cmp(&other.clone().wrap().0)
+    	self.0.partial_cmp(&other.0)
     }
 }
 
@@ -509,7 +509,7 @@ impl<N: Ord + PartialEq + Num + Clone + NumCast> Ord for Rad<N>{
 
 	#[inline]
     fn cmp(&self, other: &Rad<N>) -> Ordering{
-    	self.clone().wrap().0.cmp(&other.clone().wrap().0)
+    	self.0.cmp(&other.0)
     }
 }
 
