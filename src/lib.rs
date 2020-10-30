@@ -24,6 +24,7 @@ pub trait Angle<N>{
     fn max(self, other: Self) -> Self where N: PartialOrd + NumCast + Clone;
     fn min(self, other: Self) -> Self where N: PartialOrd + NumCast + Clone;
     fn value(self) -> N;
+    fn as_value(&self) -> &N;
 
     fn sin(self) -> N where N:Float + NumCast;
     fn cos(self) -> N where N:Float + NumCast;
@@ -91,6 +92,11 @@ impl<N: Num> Angle<N> for Deg<N>{
     #[inline]
     fn value(self) -> N{
         self.0
+    }
+
+    #[inline]
+    fn as_value(&self) -> &N{
+        &self.0
     }
 
     #[inline]
@@ -182,6 +188,11 @@ impl<N:  Num> Angle<N> for Rad<N>{
     #[inline]
     fn value(self) -> N{
         self.0
+    }
+
+    #[inline]
+    fn as_value(&self) -> &N{
+        &self.0
     }
 
     #[inline]
