@@ -725,7 +725,7 @@ fn default() {
 }
 
 #[cfg(feature="simba")]
-impl<T: Copy, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Deg<T>> for Deg<S> {
+impl<T, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Deg<T>> for Deg<S> {
     fn to_superset(&self) -> Deg<T> {
         Deg(self.0.to_superset())
     }
@@ -740,7 +740,7 @@ impl<T: Copy, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Deg<T>> for
 }
 
 #[cfg(feature="simba")]
-impl<T: Copy, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Rad<T>> for Rad<S> {
+impl<T, S: simba::scalar::SubsetOf<T>> simba::scalar::SubsetOf<Rad<T>> for Rad<S> {
     fn to_superset(&self) -> Rad<T> {
         Rad(self.0.to_superset())
     }
